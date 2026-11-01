@@ -1,0 +1,153 @@
+/* Certificate layout shared by both mockups. A4 landscape at 96 dpi (1123 x 794).
+   Colors and fonts come only from theme.css variables. */
+
+.cert {
+  width: 1123px;
+  height: 794px;
+  padding: 34px;
+  box-sizing: border-box;
+  background: var(--cert-border-fill);
+  font-family: var(--font-cert-label);
+  color: var(--cert-ink);
+}
+
+/* Border variants swap only variables, so new colors drop in as one more block. */
+.cert[data-border='gold'] {
+  --cert-border-fill: var(--cert-gold-fill);
+  --cert-rule: var(--cert-gold);
+  --cert-ornament: var(--cert-gold-ornament);
+  --cert-dash: var(--cert-gold-ornament);
+  --cert-badge: var(--cert-gold);
+  --cert-badge-ink: var(--cert-gold-deep);
+}
+
+.cert-paper {
+  position: relative;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 88px 120px 80px;
+  background: var(--cert-paper);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.cert-dash,
+.cert-rule {
+  position: absolute;
+  pointer-events: none;
+}
+.cert-dash { inset: 22px; border: 1.5px dashed var(--cert-dash); }
+.cert-rule { inset: 30px; border: 1.5px solid var(--cert-rule); }
+
+.cert-corner {
+  position: absolute;
+  width: 76px;
+  height: 76px;
+  color: var(--cert-ornament);
+}
+.cert-corner.tl { top: 14px; left: 14px; }
+.cert-corner.tr { top: 14px; right: 14px; transform: scaleX(-1); }
+.cert-corner.bl { bottom: 14px; left: 14px; transform: scaleY(-1); }
+.cert-corner.br { bottom: 14px; right: 14px; transform: scale(-1, -1); }
+
+.cert-headline {
+  margin: 0 -0.14em 0 0;
+  font-family: var(--font-cert-display);
+  font-weight: 700;
+  font-size: 86px;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  color: var(--cert-headline);
+}
+
+.cert-subtitle {
+  margin: 12px -0.16em 0 0;
+  font-family: var(--font-cert-display);
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: 0.16em;
+  color: var(--cert-subtitle);
+}
+
+.cert-presented {
+  margin: 56px 0 0;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 14px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.cert-name {
+  margin: 4px 0 0;
+  font-family: var(--font-cert-script);
+  font-size: 78px;
+  line-height: 1.15;
+  white-space: nowrap;
+  color: var(--cert-name);
+}
+
+.cert-line {
+  position: relative;
+  height: 1.5px;
+  background: var(--cert-line);
+}
+.cert-line::before,
+.cert-line::after {
+  content: '';
+  position: absolute;
+  top: -2.5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cert-line);
+}
+.cert-line::before { left: -3px; }
+.cert-line::after { right: -3px; }
+.cert-line.name { width: 640px; }
+.cert-line.sig { width: 230px; }
+
+.cert-course {
+  margin: 24px 0 0;
+  font-family: var(--font-cert-display);
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: 0.04em;
+}
+
+.cert-footer {
+  margin-top: auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+}
+
+.cert-sig {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.cert-sig-value {
+  margin-bottom: 8px;
+  font-family: var(--font-cert-display);
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 0.08em;
+}
+.cert-sig-label {
+  margin-top: 8px;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cert-muted);
+}
+
+.cert-badge {
+  width: 76px;
+  height: 76px;
+  margin-bottom: 6px;
+}
