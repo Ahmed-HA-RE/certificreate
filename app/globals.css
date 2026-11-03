@@ -1,5 +1,9 @@
 @import 'tailwindcss';
+@import 'shadcn/tailwind.css';
 @import '../components/home/certificate.css' layer(components);
+
+/* The chrome is dark-only; `dark` is set on <html> so shadcn's dark: styles always apply. */
+@custom-variant dark (&:is(.dark *));
 
 @theme {
   --color-bg: #0b0f19;
@@ -45,4 +49,15 @@
   --font-cert-display: var(--font-playfair-display), Georgia, serif;
   --font-cert-script: var(--font-pinyon-script), cursive;
   --font-cert-label: var(--font-poppins), system-ui, sans-serif;
+
+  /* shadcn/ui semantic names mapped onto the palette above: only the names the
+     installed components use. `muted` keeps the project's text-color meaning. */
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-text);
+  --color-primary: var(--color-accent);
+  --color-primary-foreground: var(--color-accent-ink);
+  --color-input: var(--color-border);
+  --color-ring: var(--color-accent);
+  --color-muted-foreground: var(--color-muted);
+  --color-destructive: var(--color-danger);
 }

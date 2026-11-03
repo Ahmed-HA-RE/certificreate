@@ -41,7 +41,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html
       lang='en'
-      className={`${inter.variable} ${playfairDisplay.variable} ${pinyonScript.variable} ${poppins.variable}`}
+      className={`dark scheme-dark ${inter.variable} ${playfairDisplay.variable} ${pinyonScript.variable} ${poppins.variable}`}
     >
       <body className='bg-bg font-sans text-sm text-text antialiased'>
         {children}

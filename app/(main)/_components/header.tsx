@@ -1,6 +1,6 @@
 export function Header() {
   return (
-    <header className='flex items-center justify-between gap-4 border-b border-border px-8 py-5'>
+    <header className='flex items-center justify-between gap-4 border-b border-border px-4 py-5 md:px-8'>
       <div className='flex items-center gap-3 text-base font-bold'>
         <span
           aria-hidden='true'
@@ -10,7 +10,7 @@ export function Header() {
         </span>
         Certificreate
       </div>
-      <span className='text-[13px] text-muted'>
+      <span className='hidden text-[13px] text-muted sm:inline'>
         Everything is saved in this browser only
       </span>
     </header>

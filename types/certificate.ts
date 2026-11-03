@@ -9,3 +9,9 @@ export interface CertificateData {
   templateId: string;
   border: BorderVariant;
 }
+
+export interface BorderOption {
+  value: BorderVariant;
+  label: string;
+  note: string;
+}
