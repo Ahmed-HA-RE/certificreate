@@ -1,1 +1,48 @@
 @import 'tailwindcss';
+@import '../components/home/certificate.css' layer(components);
+
+@theme {
+  --color-bg: #0b0f19;
+  --color-surface: #121826;
+  --color-surface-2: #182033;
+  --color-border: #243049;
+
+  --color-text: #e6eaf2;
+  --color-muted: #94a0b8;
+  --color-faint: #5b6680;
+
+  --color-accent: #3567d6;
+  --color-accent-hover: #4a7be6;
+  --color-accent-ink: #ffffff;
+  --color-accent-soft: rgb(53 103 214 / 0.18);
+  --color-danger: #f0727a;
+
+  --color-cert-paper: #ffffff;
+  --color-cert-navy: #173a7c;
+  --color-cert-headline: var(--color-cert-navy);
+  --color-cert-name: var(--color-cert-navy);
+  --color-cert-subtitle: #111111;
+  --color-cert-ink: #1a1a1a;
+  --color-cert-muted: #4a4a4a;
+  --color-cert-line: #3a3a3a;
+
+  --color-cert-rule: var(--color-cert-navy);
+  --color-cert-ornament: #8f8f8f;
+  --color-cert-dash: #9a9a9a;
+  --color-cert-badge: #4a90e2;
+  --color-cert-badge-ink: #1f5fb8;
+
+  --color-cert-gold: #b8913a;
+  --color-cert-gold-deep: #8a6a22;
+  --color-cert-gold-ornament: #c4a55c;
+
+  --radius-sm: 6px;
+  --radius-lg: 10px;
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-cert-display: var(--font-playfair-display), Georgia, serif;
+  --font-cert-script: var(--font-pinyon-script), cursive;
+  --font-cert-label: var(--font-poppins), system-ui, sans-serif;
+}
