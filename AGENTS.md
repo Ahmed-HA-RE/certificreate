@@ -66,12 +66,16 @@ and installed dependencies before adding machinery.
 - Build: `pnpm build` (also runs TypeScript type checking)
 - Production server: `pnpm start` (after `pnpm build`)
 - Lint: `pnpm lint`
+- Test: `pnpm test` (Vitest, single run)
+- Test watch: `pnpm test:watch`
 
-No `test`, `typecheck`, `format`, or `verify` script is configured yet.
+No `typecheck`, `format`, or `verify` script is configured yet.
 
 ## Testing
 
-There is no test runner yet, so tests are not a required gate. Verify changes
-with `pnpm lint`, `pnpm build`, and direct evidence from the running app. When a
-test runner is added, document its exact command here as `Test`; from then on,
-steps that add logic must ship a passing test.
+Unit tests run on Vitest (`vitest.config.mts`). Test files sit next to their
+source as `*.test.ts`. Steps that add pure logic (parsers, formatters,
+validators, slug builders, server actions) must ship a passing test, and
+`pnpm test` must be green before a step is approved. UI and integration
+surfaces are verified with `pnpm lint`, `pnpm build`, and direct evidence from
+the running app instead.
