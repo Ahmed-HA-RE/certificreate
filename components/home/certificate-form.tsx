@@ -50,7 +50,7 @@ export function CertificateForm({ data, onChange }: CertificateFormProps) {
         const id = `${idPrefix}-${name}`;
         return (
           <div key={name} className='grid gap-2'>
-            <Label htmlFor={id} className='text-xs font-semibold text-muted'>
+            <Label htmlFor={id} className='text-xs font-semibold text-muted-foreground'>
               {label}
             </Label>
             <Input
@@ -65,7 +65,7 @@ export function CertificateForm({ data, onChange }: CertificateFormProps) {
       })}
 
       <div className='grid gap-2'>
-        <span id={borderTitleId} className='text-xs font-semibold text-muted'>
+        <span id={borderTitleId} className='text-xs font-semibold text-muted-foreground'>
           Border
         </span>
         <RadioGroup
@@ -77,7 +77,7 @@ export function CertificateForm({ data, onChange }: CertificateFormProps) {
           {BORDER_OPTIONS.map(({ value, label, note }) => (
             <Label
               key={value}
-              className='cursor-pointer rounded-sm border border-border bg-bg px-3 py-2.5 font-normal text-muted has-data-checked:border-accent has-data-checked:text-text has-data-checked:ring-3 has-data-checked:ring-accent-soft'
+              className='cursor-pointer rounded-sm border border-border bg-background px-3 py-2.5 font-normal text-muted-foreground has-data-checked:border-primary has-data-checked:text-foreground has-data-checked:ring-3 has-data-checked:ring-primary/18'
             >
               <RadioGroupItem value={value} />
               <span

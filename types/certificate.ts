@@ -15,3 +15,5 @@ export interface BorderOption {
   label: string;
   note: string;
 }
+
+export type ExportFormat = 'png' | 'pdf';

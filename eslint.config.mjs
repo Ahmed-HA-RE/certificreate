@@ -12,7 +12,14 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Chrome downloaded by Puppeteer (.puppeteerrc.cjs).
+    ".cache/**",
   ]),
+  // CommonJS config files can only load modules with require().
+  {
+    files: ["**/*.cjs"],
+    rules: { "@typescript-eslint/no-require-imports": "off" },
+  },
 ]);
 
 export default eslintConfig;

@@ -5,22 +5,69 @@
 /* The chrome is dark-only; `dark` is set on <html> so shadcn's dark: styles always apply. */
 @custom-variant dark (&:is(.dark *));
 
+/* shadcn/ui semantic tokens. The chrome is dark-only, so :root holds the dark palette. */
+:root {
+  --radius: 10px;
+
+  --background: #0b0f19;
+  --foreground: #e6eaf2;
+  --card: #121826;
+  --card-foreground: #e6eaf2;
+  --popover: #182033;
+  --popover-foreground: #e6eaf2;
+  --primary: #3567d6;
+  --primary-foreground: #ffffff;
+  --secondary: #182033;
+  --secondary-foreground: #e6eaf2;
+  --muted: #182033;
+  --muted-foreground: #94a0b8;
+  --accent: #182033;
+  --accent-foreground: #e6eaf2;
+  --destructive: #f0727a;
+  --border: #243049;
+  --input: #243049;
+  --ring: #3567d6;
+
+  /* Project extras shadcn has no name for. */
+  --faint: #5b6680;
+  --primary-hover: #4a7be6;
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-cert-display: var(--font-playfair-display), Georgia, serif;
+  --font-cert-script: var(--font-pinyon-script), cursive;
+  --font-cert-label: var(--font-poppins), system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-faint: var(--faint);
+  --color-primary-hover: var(--primary-hover);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+/* Certificate artifact: fixed light palette, independent of the chrome. */
 @theme {
-  --color-bg: #0b0f19;
-  --color-surface: #121826;
-  --color-surface-2: #182033;
-  --color-border: #243049;
-
-  --color-text: #e6eaf2;
-  --color-muted: #94a0b8;
-  --color-faint: #5b6680;
-
-  --color-accent: #3567d6;
-  --color-accent-hover: #4a7be6;
-  --color-accent-ink: #ffffff;
-  --color-accent-soft: rgb(53 103 214 / 0.18);
-  --color-danger: #f0727a;
-
   --color-cert-paper: #ffffff;
   --color-cert-navy: #173a7c;
   --color-cert-headline: var(--color-cert-navy);
@@ -39,25 +86,13 @@
   --color-cert-gold: #b8913a;
   --color-cert-gold-deep: #8a6a22;
   --color-cert-gold-ornament: #c4a55c;
-
-  --radius-sm: 6px;
-  --radius-lg: 10px;
 }
 
-@theme inline {
-  --font-sans: var(--font-inter), system-ui, sans-serif;
-  --font-cert-display: var(--font-playfair-display), Georgia, serif;
-  --font-cert-script: var(--font-pinyon-script), cursive;
-  --font-cert-label: var(--font-poppins), system-ui, sans-serif;
-
-  /* shadcn/ui semantic names mapped onto the palette above: only the names the
-     installed components use. `muted` keeps the project's text-color meaning. */
-  --color-background: var(--color-bg);
-  --color-foreground: var(--color-text);
-  --color-primary: var(--color-accent);
-  --color-primary-foreground: var(--color-accent-ink);
-  --color-input: var(--color-border);
-  --color-ring: var(--color-accent);
-  --color-muted-foreground: var(--color-muted);
-  --color-destructive: var(--color-danger);
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
