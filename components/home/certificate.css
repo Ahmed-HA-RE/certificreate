@@ -1,11 +1,11 @@
-/* Fixed A4 landscape at 96 dpi (1123 x 794), shared by preview and export. */
+/* Fixed A4 landscape at 96 dpi (1123 x 794), shared by preview and export.
+   Shared by every template; layout rules live in `templates/template-*.css`. */
 
 .cert {
   --cert-border-fill: var(--color-cert-navy);
 
   width: 1123px;
   height: 794px;
-  padding: 34px;
   box-sizing: border-box;
   background: var(--cert-border-fill);
   font-family: var(--font-cert-label);
@@ -29,26 +29,6 @@
   --color-cert-badge-ink: var(--color-cert-gold-deep);
 }
 
-.cert-paper {
-  position: relative;
-  height: 100%;
-  box-sizing: border-box;
-  padding: 88px 120px 80px;
-  background: var(--color-cert-paper);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.cert-dash,
-.cert-rule {
-  position: absolute;
-  pointer-events: none;
-}
-.cert-dash { inset: 22px; border: 1.5px dashed var(--color-cert-dash); }
-.cert-rule { inset: 30px; border: 1.5px solid var(--color-cert-rule); }
-
 .cert-corner {
   position: absolute;
   width: 76px;
@@ -60,44 +40,6 @@
 .cert-corner.bl { bottom: 14px; left: 14px; transform: scaleY(-1); }
 .cert-corner.br { bottom: 14px; right: 14px; transform: scale(-1, -1); }
 .cert-corner-bg { fill: var(--color-cert-paper); }
-
-.cert-headline {
-  margin: 0 -0.14em 0 0;
-  font-family: var(--font-cert-display);
-  font-weight: 700;
-  font-size: 86px;
-  line-height: 1;
-  letter-spacing: 0.14em;
-  color: var(--color-cert-headline);
-}
-
-.cert-subtitle {
-  margin: 12px -0.16em 0 0;
-  font-family: var(--font-cert-display);
-  font-weight: 600;
-  font-size: 26px;
-  letter-spacing: 0.16em;
-  color: var(--color-cert-subtitle);
-}
-
-.cert-presented,
-.cert-completed {
-  margin: 56px 0 0;
-  font-weight: 700;
-  font-style: italic;
-  font-size: 14px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-}
-
-.cert-name {
-  margin: 4px 0 0;
-  font-family: var(--font-cert-script);
-  font-size: 78px;
-  line-height: 1.15;
-  white-space: nowrap;
-  color: var(--color-cert-name);
-}
 
 .cert-line {
   position: relative;
@@ -116,26 +58,6 @@
 }
 .cert-line::before { left: -3px; }
 .cert-line::after { right: -3px; }
-.cert-line.name { width: 640px; }
-.cert-line.sig { width: 230px; }
-
-.cert-completed { margin-top: 24px; }
-
-.cert-course {
-  margin: 10px 0 0;
-  font-family: var(--font-cert-display);
-  font-weight: 600;
-  font-size: 26px;
-  letter-spacing: 0.04em;
-}
-
-.cert-footer {
-  margin-top: auto;
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: end;
-}
 
 .cert-sig {
   display: flex;

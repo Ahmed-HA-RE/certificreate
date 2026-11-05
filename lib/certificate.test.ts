@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { certificateFileName } from '@/lib/certificate';
+import {
+  certificateFileName,
+  DEFAULT_TEMPLATE_ID,
+  resolveTemplateId,
+  TEMPLATE_OPTIONS,
+} from '@/lib/certificate';
 
 describe('certificateFileName', () => {
   it('slugs the recipient name', () => {
@@ -21,5 +26,18 @@ describe('certificateFileName', () => {
     expect(certificateFileName({ recipientName: 'ريان' }, 'pdf')).toBe(
       'certificate.pdf',
     );
+  });
+});
+
+describe('resolveTemplateId', () => {
+  it('keeps every registered template id', () => {
+    for (const { id } of TEMPLATE_OPTIONS) {
+      expect(resolveTemplateId(id)).toBe(id);
+    }
+  });
+
+  it('falls back to the default for an unknown or empty id', () => {
+    expect(resolveTemplateId('template-99')).toBe(DEFAULT_TEMPLATE_ID);
+    expect(resolveTemplateId('')).toBe(DEFAULT_TEMPLATE_ID);
   });
 });

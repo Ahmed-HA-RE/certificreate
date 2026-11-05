@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 @import 'shadcn/tailwind.css';
 @import '../components/home/certificate.css' layer(components);
+@import '../components/home/templates/template-1.css' layer(components);
+@import '../components/home/templates/template-2.css' layer(components);
+@import '../components/home/templates/template-3.css' layer(components);
 
 /* The chrome is dark-only; `dark` is set on <html> so shadcn's dark: styles always apply. */
 @custom-variant dark (&:is(.dark *));

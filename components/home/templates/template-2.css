@@ -1,0 +1,86 @@
+/* Template 2: border-fill band down the left edge, one inset rule, left-aligned. */
+
+.cert[data-template='template-2'] {
+  padding-left: 140px;
+
+  .cert-paper {
+    position: relative;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 84px 96px 72px 88px;
+    background: var(--color-cert-paper);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .cert-rule {
+    position: absolute;
+    inset: 24px;
+    border: 1.5px solid var(--color-cert-rule);
+    pointer-events: none;
+  }
+
+  .cert-headline {
+    margin: 0;
+    font-family: var(--font-cert-display);
+    font-weight: 700;
+    font-size: 72px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    color: var(--color-cert-headline);
+  }
+
+  .cert-subtitle {
+    margin: 16px 0 0;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.32em;
+    color: var(--color-cert-rule);
+  }
+
+  .cert-presented,
+  .cert-completed {
+    margin: 84px 0 0;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 14px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .cert-name {
+    margin: 4px 0 0;
+    font-family: var(--font-cert-script);
+    font-size: 72px;
+    line-height: 1.15;
+    white-space: nowrap;
+    color: var(--color-cert-name);
+  }
+
+  .cert-line.name { width: 560px; }
+  .cert-line.sig { width: 200px; }
+
+  .cert-completed { margin-top: 22px; }
+
+  .cert-course {
+    margin: 10px 0 0;
+    font-family: var(--font-cert-display);
+    font-weight: 600;
+    font-size: 26px;
+    letter-spacing: 0.04em;
+  }
+
+  .cert-footer {
+    margin-top: auto;
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    gap: 56px;
+  }
+
+  .cert-sig { align-items: flex-start; }
+
+  .cert-badge { margin-left: auto; }
+}

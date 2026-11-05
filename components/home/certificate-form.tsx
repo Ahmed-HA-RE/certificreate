@@ -2,7 +2,7 @@ import { useId } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { BORDER_OPTIONS } from '@/lib/certificate';
+import { BORDER_OPTIONS, TEMPLATE_OPTIONS } from '@/lib/certificate';
 import type { BorderVariant, CertificateData } from '@/types/certificate';
 
 type DetailField = Exclude<keyof CertificateData, 'templateId' | 'border'>;
@@ -25,6 +25,9 @@ const SWATCH_CLASS: Record<BorderVariant, string> = {
   gold: 'bg-cert-gold',
 };
 
+const OPTION_CLASS =
+  'cursor-pointer rounded-sm border border-border bg-background px-3 py-2.5 font-normal text-muted-foreground has-data-checked:border-primary has-data-checked:text-foreground has-data-checked:ring-3 has-data-checked:ring-primary/18';
+
 export type CertificateFieldChange = <K extends keyof CertificateData>(
   name: K,
   value: CertificateData[K]
@@ -37,7 +40,13 @@ interface CertificateFormProps {
 
 export function CertificateForm({ data, onChange }: CertificateFormProps) {
   const idPrefix = useId();
+  const templateTitleId = `${idPrefix}-template`;
   const borderTitleId = `${idPrefix}-border`;
+
+  const handleTemplateChange = (value: string) => {
+    const option = TEMPLATE_OPTIONS.find((template) => template.id === value);
+    if (option) onChange('templateId', option.id);
+  };
 
   const handleBorderChange = (value: string) => {
     const option = BORDER_OPTIONS.find((border) => border.value === value);
@@ -65,6 +74,25 @@ export function CertificateForm({ data, onChange }: CertificateFormProps) {
       })}
 
       <div className='grid gap-2'>
+        <span id={templateTitleId} className='text-xs font-semibold text-muted-foreground'>
+          Template
+        </span>
+        <RadioGroup
+          aria-labelledby={templateTitleId}
+          value={data.templateId}
+          onValueChange={handleTemplateChange}
+          className='grid-cols-1 sm:max-[1139px]:grid-cols-3'
+        >
+          {TEMPLATE_OPTIONS.map(({ id, name }) => (
+            <Label key={id} className={OPTION_CLASS}>
+              <RadioGroupItem value={id} />
+              {name}
+            </Label>
+          ))}
+        </RadioGroup>
+      </div>
+
+      <div className='grid gap-2'>
         <span id={borderTitleId} className='text-xs font-semibold text-muted-foreground'>
           Border
         </span>
@@ -75,10 +103,7 @@ export function CertificateForm({ data, onChange }: CertificateFormProps) {
           className='grid-cols-1 sm:grid-cols-2'
         >
           {BORDER_OPTIONS.map(({ value, label, note }) => (
-            <Label
-              key={value}
-              className='cursor-pointer rounded-sm border border-border bg-background px-3 py-2.5 font-normal text-muted-foreground has-data-checked:border-primary has-data-checked:text-foreground has-data-checked:ring-3 has-data-checked:ring-primary/18'
-            >
+            <Label key={value} className={OPTION_CLASS}>
               <RadioGroupItem value={value} />
               <span
                 aria-hidden='true'

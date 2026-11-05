@@ -12,6 +12,6 @@ export const certificateDataSchema = z.strictObject({
   courseTitle: text,
   date: z.union([z.literal(''), z.iso.date()]),
   instructorName: text,
-  templateId: z.literal('template-1'),
+  templateId: z.enum(['template-1', 'template-2', 'template-3']),
   border: z.enum(['blue', 'gold']),
 }) satisfies z.ZodType<CertificateData>;

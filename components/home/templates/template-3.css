@@ -1,0 +1,102 @@
+/* Template 3: thin outer frame, double inner rule, corner brackets, logo on top. */
+
+.cert[data-template='template-3'] {
+  padding: 18px;
+
+  .cert-paper {
+    position: relative;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 56px 136px 68px;
+    background: var(--color-cert-paper);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .cert-rule {
+    position: absolute;
+    border: 1.5px solid var(--color-cert-rule);
+    pointer-events: none;
+  }
+  .cert-rule.outer { inset: 12px; }
+  .cert-rule.inner { inset: 20px; }
+
+  /* Inside the double rule rather than over it. */
+  .cert-corner.tl { top: 30px; left: 30px; }
+  .cert-corner.tr { top: 30px; right: 30px; }
+  .cert-corner.bl { bottom: 30px; left: 30px; }
+  .cert-corner.br { bottom: 30px; right: 30px; }
+
+  .cert-badge { margin-bottom: 14px; }
+
+  .cert-headline {
+    margin: 0 -0.14em 0 0;
+    font-family: var(--font-cert-display);
+    font-weight: 700;
+    font-size: 72px;
+    line-height: 1;
+    letter-spacing: 0.14em;
+    color: var(--color-cert-headline);
+  }
+
+  .cert-subtitle-row {
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .cert-line.flank { width: 72px; background: var(--color-cert-rule); }
+  .cert-line.flank::before,
+  .cert-line.flank::after { background: var(--color-cert-rule); }
+
+  .cert-subtitle {
+    margin: 0 -0.16em 0 0;
+    font-family: var(--font-cert-display);
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: 0.16em;
+    color: var(--color-cert-subtitle);
+  }
+
+  .cert-presented,
+  .cert-completed {
+    margin: 40px 0 0;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 14px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .cert-name {
+    margin: 4px 0 0;
+    font-family: var(--font-cert-script);
+    font-size: 74px;
+    line-height: 1.15;
+    white-space: nowrap;
+    color: var(--color-cert-name);
+  }
+
+  .cert-line.name { width: 600px; }
+  .cert-line.sig { width: 230px; }
+
+  .cert-completed { margin-top: 22px; }
+
+  .cert-course {
+    margin: 10px 0 0;
+    font-family: var(--font-cert-display);
+    font-weight: 600;
+    font-size: 26px;
+    letter-spacing: 0.04em;
+  }
+
+  .cert-footer {
+    margin-top: auto;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+}
