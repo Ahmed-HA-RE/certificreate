@@ -82,6 +82,8 @@ async function withCertificatePage<T>(
     await page.waitForSelector('[data-render-ready]');
     await page.evaluate(async () => {
       await document.fonts.ready;
+      // A logo that cannot decode rejects here, so a broken image never ships.
+      await Promise.all([...document.images].map((image) => image.decode()));
     });
     // The Next.js dev indicator overlays the corner in `next dev`; absent in production.
     await page.addStyleTag({

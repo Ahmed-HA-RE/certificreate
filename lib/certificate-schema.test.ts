@@ -43,3 +43,20 @@ describe('exportRequestSchema', () => {
     expect(exportRequestSchema.safeParse(certificate).success).toBe(false);
   });
 });
+
+describe('exportRequestSchema logo', () => {
+  it('accepts no logo, a null logo, or a PNG logo', () => {
+    for (const logoDataUrl of [undefined, null, 'data:image/png;base64,iVBORw0KGgo=']) {
+      const request = { ...PLACEHOLDER_CERTIFICATE, logoDataUrl };
+      expect(exportRequestSchema.safeParse(request).success).toBe(true);
+    }
+  });
+
+  it('rejects an SVG logo', () => {
+    const request = {
+      ...PLACEHOLDER_CERTIFICATE,
+      logoDataUrl: 'data:image/svg+xml;base64,PHN2Zy8+',
+    };
+    expect(exportRequestSchema.safeParse(request).success).toBe(false);
+  });
+});

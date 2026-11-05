@@ -22,6 +22,10 @@ export function CertificateEditor() {
     setData((current) => ({ ...current, [name]: value }));
   };
 
+  const handleLogoChange = (logoDataUrl: string | null) => {
+    brand.updateBrandSettings({ ...brand.settings, logoDataUrl });
+  };
+
   const handleBrandColorChange = (primary: string | undefined) => {
     brand.updateBrandSettings({
       ...brand.settings,
@@ -32,6 +36,7 @@ export function CertificateEditor() {
   const exportHandlers = {
     data,
     colors: brand.settings.colors,
+    logoDataUrl: brand.settings.logoDataUrl,
     onExportStart: () => setFailedFormat(null),
     onExportError: setFailedFormat,
   };
@@ -74,12 +79,17 @@ export function CertificateEditor() {
               <BrandSettingsPanel
                 settings={brand.settings}
                 saveFailed={brand.saveFailed}
+                onLogoChange={handleLogoChange}
                 onBrandColorChange={handleBrandColorChange}
               />
             </TabsContent>
           </Tabs>
         </aside>
-        <CertificatePreview data={data} colors={brand.settings.colors} />
+        <CertificatePreview
+          data={data}
+          colors={brand.settings.colors}
+          logoDataUrl={brand.settings.logoDataUrl}
+        />
       </div>
     </>
   );

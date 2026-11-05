@@ -23,7 +23,11 @@ export function CertificateRender() {
 
   return (
     <div data-render-ready=''>
-      <Certificate data={data} colors={data.colors} />
+      <Certificate
+        data={data}
+        colors={data.colors}
+        logoDataUrl={data.logoDataUrl}
+      />
     </div>
   );
 }

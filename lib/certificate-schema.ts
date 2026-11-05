@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import { brandColorsSchema } from '@/lib/brand-settings-schema';
+import {
+  brandColorsSchema,
+  logoDataUrlSchema,
+} from '@/lib/brand-settings-schema';
 import type { CertificateData, ExportRequest } from '@/types/certificate';
 
 /** Abuse guard for the export route; the form's own limits arrive in feature 7. */
@@ -17,7 +20,8 @@ export const certificateDataSchema = z.strictObject({
   border: z.enum(['blue', 'gold']),
 }) satisfies z.ZodType<CertificateData>;
 
-/** Untrusted export request body: the certificate plus optional brand colors. */
+/** Untrusted export request body: the certificate plus optional brand colors and logo. */
 export const exportRequestSchema = certificateDataSchema.extend({
   colors: brandColorsSchema.optional(),
+  logoDataUrl: logoDataUrlSchema.nullable().optional(),
 }) satisfies z.ZodType<ExportRequest>;

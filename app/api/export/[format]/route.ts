@@ -15,8 +15,8 @@ function isExportFormat(format: string): format is ExportFormat {
   return Object.hasOwn(EXPORTERS, format);
 }
 
-// A valid certificate is well under 1 KB; anything larger is never worth reading.
-const MAX_BODY_BYTES = 16 * 1024;
+// A 1 MB logo is about 1.4 MB as a data URL; anything larger is never worth reading.
+const MAX_BODY_BYTES = 1.5 * 1024 * 1024;
 
 function invalidData() {
   return Response.json({ error: 'Invalid certificate data.' }, { status: 400 });

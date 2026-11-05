@@ -1,7 +1,7 @@
 import { LogoMark } from '@/components/home/logo-mark';
 import type { TemplateLayoutProps } from '@/components/home/certificate';
 
-export function Template2({ data }: TemplateLayoutProps) {
+export function Template2({ data, logoDataUrl }: TemplateLayoutProps) {
   return (
     <div className='cert-paper'>
       <div className='cert-rule' />
@@ -25,7 +25,7 @@ export function Template2({ data }: TemplateLayoutProps) {
           <div className='cert-line sig' />
           <div className='cert-sig-label'>Instructor</div>
         </div>
-        <LogoMark />
+        <LogoMark logoDataUrl={logoDataUrl} />
       </div>
     </div>
   );

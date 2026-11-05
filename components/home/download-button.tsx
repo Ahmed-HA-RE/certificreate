@@ -21,6 +21,7 @@ interface DownloadButtonProps {
   format: ExportFormat;
   data: CertificateData;
   colors: BrandColors;
+  logoDataUrl: string | null;
   variant: 'default' | 'outline';
   onExportStart: () => void;
   onExportError: (format: ExportFormat) => void;
@@ -30,6 +31,7 @@ export function DownloadButton({
   format,
   data,
   colors,
+  logoDataUrl,
   variant,
   onExportStart,
   onExportError,
@@ -40,7 +42,7 @@ export function DownloadButton({
     onExportStart();
     setIsPending(async () => {
       try {
-        const request: ExportRequest = { ...data, colors };
+        const request: ExportRequest = { ...data, colors, logoDataUrl };
         const response = await fetch(`/api/export/${format}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

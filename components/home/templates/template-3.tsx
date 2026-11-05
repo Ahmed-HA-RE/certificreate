@@ -2,7 +2,7 @@ import { CornerOrnament } from '@/components/home/corner-ornament';
 import { LogoMark } from '@/components/home/logo-mark';
 import type { TemplateLayoutProps } from '@/components/home/certificate';
 
-export function Template3({ data }: TemplateLayoutProps) {
+export function Template3({ data, logoDataUrl }: TemplateLayoutProps) {
   return (
     <div className='cert-paper'>
       <div className='cert-rule outer' />
@@ -12,7 +12,7 @@ export function Template3({ data }: TemplateLayoutProps) {
       <CornerOrnament position='bl' />
       <CornerOrnament position='br' />
 
-      <LogoMark />
+      <LogoMark logoDataUrl={logoDataUrl} />
       <p className='cert-headline'>CERTIFICATE</p>
       <div className='cert-subtitle-row'>
         <div className='cert-line flank' />

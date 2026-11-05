@@ -1,5 +1,9 @@
-import { brandSettingsSchema } from '@/lib/brand-settings-schema';
-import type { BrandSettings } from '@/types/brand-settings';
+import {
+  brandSettingsSchema,
+  LOGO_MIME_TYPES,
+  MAX_LOGO_BYTES,
+} from '@/lib/brand-settings-schema';
+import type { BrandSettings, LogoFileError } from '@/types/brand-settings';
 
 export const BRAND_SETTINGS_STORAGE_KEY = 'certifcreate:brand-settings';
 
@@ -26,4 +30,11 @@ export function parseBrandSettings(raw: string | null): BrandSettings {
 
 export function serializeBrandSettings(settings: BrandSettings) {
   return JSON.stringify(settings);
+}
+
+/** Why a picked logo file is refused before it is read, or `null` when it may be read. */
+export function checkLogoFile(file: Pick<File, 'type' | 'size'>): LogoFileError | null {
+  if (!LOGO_MIME_TYPES.includes(file.type)) return 'type';
+  if (file.size > MAX_LOGO_BYTES) return 'size';
+  return null;
 }

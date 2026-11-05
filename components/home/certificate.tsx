@@ -10,6 +10,7 @@ import type { CertificateData, TemplateId } from '@/types/certificate';
 
 export interface TemplateLayoutProps {
   data: CertificateData;
+  logoDataUrl?: string | null;
 }
 
 const TEMPLATE_LAYOUTS: Record<TemplateId, ComponentType<TemplateLayoutProps>> = {
@@ -21,9 +22,10 @@ const TEMPLATE_LAYOUTS: Record<TemplateId, ComponentType<TemplateLayoutProps>> =
 interface CertificateProps {
   data: CertificateData;
   colors?: BrandColors;
+  logoDataUrl?: string | null;
 }
 
-export function Certificate({ data, colors }: CertificateProps) {
+export function Certificate({ data, colors, logoDataUrl }: CertificateProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const templateId = resolveTemplateId(data.templateId);
   const Layout = TEMPLATE_LAYOUTS[templateId];
@@ -44,7 +46,7 @@ export function Certificate({ data, colors }: CertificateProps) {
       data-template={templateId}
       data-border={data.border}
     >
-      <Layout data={data} />
+      <Layout data={data} logoDataUrl={logoDataUrl} />
     </div>
   );
 }

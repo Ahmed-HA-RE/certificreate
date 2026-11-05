@@ -28,6 +28,7 @@ export interface TemplateOption {
 /** Export payload: the certificate plus the brand overrides that style it. */
 export interface ExportRequest extends CertificateData {
   colors?: BrandColors;
+  logoDataUrl?: string | null;
 }
 
 export type ExportFormat = 'png' | 'pdf';

@@ -1,4 +1,15 @@
-export function LogoMark() {
+interface LogoMarkProps {
+  /** Uploaded brand logo; without one the placeholder badge is drawn. */
+  logoDataUrl?: string | null;
+}
+
+export function LogoMark({ logoDataUrl }: LogoMarkProps) {
+  if (logoDataUrl) {
+    // A data URL already in memory; next/image adds nothing for it.
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img className='cert-badge cert-logo' src={logoDataUrl} alt='' />;
+  }
+
   return (
     <svg className='cert-badge' viewBox='0 0 64 64' aria-hidden='true'>
       <polygon

@@ -91,6 +91,15 @@
   --color-cert-gold-ornament: #c4a55c;
 }
 
+/* Toasts use the chrome's popover tokens. Unlayered, and one class more specific than
+   Sonner's own `[data-sonner-toaster][data-sonner-theme]` rule, so it wins. */
+.toaster[data-sonner-toaster][data-sonner-theme] {
+  --normal-bg: var(--popover);
+  --normal-text: var(--popover-foreground);
+  --normal-border: var(--border);
+  --border-radius: var(--radius);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -2,7 +2,7 @@ import { CornerOrnament } from '@/components/home/corner-ornament';
 import { LogoMark } from '@/components/home/logo-mark';
 import type { TemplateLayoutProps } from '@/components/home/certificate';
 
-export function Template1({ data }: TemplateLayoutProps) {
+export function Template1({ data, logoDataUrl }: TemplateLayoutProps) {
   return (
     <div className='cert-paper'>
       <div className='cert-dash' />
@@ -26,7 +26,7 @@ export function Template1({ data }: TemplateLayoutProps) {
           <div className='cert-line sig' />
           <div className='cert-sig-label'>Date</div>
         </div>
-        <LogoMark />
+        <LogoMark logoDataUrl={logoDataUrl} />
         <div className='cert-sig'>
           <div className='cert-sig-value'>{data.instructorName}</div>
           <div className='cert-line sig' />
