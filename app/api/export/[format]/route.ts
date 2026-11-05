@@ -1,11 +1,11 @@
 import { certificateFileName } from '@/lib/certificate';
-import { certificateDataSchema } from '@/lib/certificate-schema';
+import { exportRequestSchema } from '@/lib/certificate-schema';
 import { renderCertificatePdf, renderCertificatePng } from '@/lib/export';
-import type { CertificateData, ExportFormat } from '@/types/certificate';
+import type { ExportFormat, ExportRequest } from '@/types/certificate';
 
 const EXPORTERS: Record<
   ExportFormat,
-  { contentType: string; render: (data: CertificateData) => Promise<Uint8Array> }
+  { contentType: string; render: (data: ExportRequest) => Promise<Uint8Array> }
 > = {
   png: { contentType: 'image/png', render: renderCertificatePng },
   pdf: { contentType: 'application/pdf', render: renderCertificatePdf },
@@ -69,7 +69,7 @@ export async function POST(
   } catch {
     return invalidData();
   }
-  const parsed = certificateDataSchema.safeParse(body);
+  const parsed = exportRequestSchema.safeParse(body);
   if (!parsed.success) return invalidData();
 
   const exporter = EXPORTERS[format];

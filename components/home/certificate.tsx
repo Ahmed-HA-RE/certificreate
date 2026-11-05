@@ -1,8 +1,11 @@
-import type { ComponentType } from 'react';
+'use client';
+
+import { useLayoutEffect, useRef, type ComponentType } from 'react';
 import { Template1 } from '@/components/home/templates/template-1';
 import { Template2 } from '@/components/home/templates/template-2';
 import { Template3 } from '@/components/home/templates/template-3';
 import { resolveTemplateId } from '@/lib/certificate';
+import type { BrandColors } from '@/types/brand-settings';
 import type { CertificateData, TemplateId } from '@/types/certificate';
 
 export interface TemplateLayoutProps {
@@ -17,14 +20,30 @@ const TEMPLATE_LAYOUTS: Record<TemplateId, ComponentType<TemplateLayoutProps>> =
 
 interface CertificateProps {
   data: CertificateData;
+  colors?: BrandColors;
 }
 
-export function Certificate({ data }: CertificateProps) {
+export function Certificate({ data, colors }: CertificateProps) {
+  const rootRef = useRef<HTMLDivElement>(null);
   const templateId = resolveTemplateId(data.templateId);
   const Layout = TEMPLATE_LAYOUTS[templateId];
+  const brandColor = colors?.primary;
+
+  // Before paint, so neither the preview nor an export capture shows navy first.
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    if (brandColor) root.style.setProperty('--color-cert-navy', brandColor);
+    else root.style.removeProperty('--color-cert-navy');
+  }, [brandColor]);
 
   return (
-    <div className='cert' data-template={templateId} data-border={data.border}>
+    <div
+      ref={rootRef}
+      className='cert'
+      data-template={templateId}
+      data-border={data.border}
+    >
       <Layout data={data} />
     </div>
   );

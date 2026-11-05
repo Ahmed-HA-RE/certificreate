@@ -2,7 +2,11 @@
    Shared by every template; layout rules live in `templates/template-*.css`. */
 
 .cert {
+  /* Resolved here, not on :root, so a brand color set on one certificate reaches them. */
   --cert-border-fill: var(--color-cert-navy);
+  --color-cert-headline: var(--color-cert-navy);
+  --color-cert-name: var(--color-cert-navy);
+  --color-cert-rule: var(--color-cert-navy);
 
   width: 1123px;
   height: 794px;

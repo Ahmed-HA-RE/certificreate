@@ -1,7 +1,7 @@
 import 'server-only';
 
 import puppeteer, { type Browser, type Page } from 'puppeteer';
-import type { CertificateData } from '@/types/certificate';
+import type { ExportRequest } from '@/types/certificate';
 
 /** A4 landscape at 96 dpi, matching `certificate.css`. */
 const CERTIFICATE_WIDTH = 1123;
@@ -61,7 +61,7 @@ function renderPageUrl() {
 }
 
 async function withCertificatePage<T>(
-  data: CertificateData,
+  data: ExportRequest,
   deviceScaleFactor: number,
   render: (page: Page) => Promise<T>
 ): Promise<T> {
@@ -95,7 +95,7 @@ async function withCertificatePage<T>(
   }
 }
 
-export function renderCertificatePdf(data: CertificateData) {
+export function renderCertificatePdf(data: ExportRequest) {
   return withCertificatePage(data, 1, (page) =>
     page.pdf({
       format: 'A4',
@@ -108,7 +108,7 @@ export function renderCertificatePdf(data: CertificateData) {
   );
 }
 
-export function renderCertificatePng(data: CertificateData) {
+export function renderCertificatePng(data: ExportRequest) {
   return withCertificatePage(data, PNG_SCALE, async (page) => {
     const certificate = await page.$('.cert');
     if (!certificate) throw new Error('The render page has no certificate.');

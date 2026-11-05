@@ -2,12 +2,12 @@
 
 import { useSyncExternalStore } from 'react';
 import { Certificate } from '@/components/home/certificate';
-import type { CertificateData } from '@/types/certificate';
+import type { ExportRequest } from '@/types/certificate';
 
 declare global {
   interface Window {
     /** Injected by the export pipeline (`lib/export.ts`) before the page loads. */
-    __CERTIFICATE__?: CertificateData;
+    __CERTIFICATE__?: ExportRequest;
   }
 }
 
@@ -23,7 +23,7 @@ export function CertificateRender() {
 
   return (
     <div data-render-ready=''>
-      <Certificate data={data} />
+      <Certificate data={data} colors={data.colors} />
     </div>
   );
 }
