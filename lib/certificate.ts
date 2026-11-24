@@ -39,6 +39,17 @@ export const PLACEHOLDER_CERTIFICATE: CertificateData = {
   border: DEFAULT_BORDER,
 };
 
+/** `data` with its four text fields emptied; the template and border are kept. */
+export function clearCertificateText(data: CertificateData): CertificateData {
+  return {
+    ...data,
+    recipientName: '',
+    courseTitle: '',
+    date: '',
+    instructorName: '',
+  };
+}
+
 /** `certificate-<recipient-slug>.<format>`, ASCII only, e.g. `certificate-john-smith.png`. */
 export function certificateFileName(
   data: Pick<CertificateData, 'recipientName'>,

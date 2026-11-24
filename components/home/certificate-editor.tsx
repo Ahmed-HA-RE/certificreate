@@ -1,25 +1,49 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { toast } from 'sonner';
 import {
   CertificateForm,
+  CertificateFormSkeleton,
   type CertificateFieldChange,
 } from '@/components/home/certificate-form';
 import { BrandSettingsPanel } from '@/components/home/brand-settings-panel';
 import { CertificatePreview } from '@/components/home/certificate-preview';
 import { DownloadButton } from '@/components/home/download-button';
+import { HistoryPanel } from '@/components/home/history-panel';
 import { useBrandSettings } from '@/components/home/use-brand-settings';
+import { useHistory } from '@/components/home/use-history';
+import { useLastFormValues } from '@/components/home/use-last-form-values';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PLACEHOLDER_CERTIFICATE } from '@/lib/certificate';
+import { clearCertificateText } from '@/lib/certificate';
 import type { CertificateData, ExportFormat } from '@/types/certificate';
 
 export function CertificateEditor() {
-  const [data, setData] = useState<CertificateData>(PLACEHOLDER_CERTIFICATE);
+  // Every local-storage store switches from its server fallback in the same
+  // post-hydration render, so `loaded` also covers the brand settings.
+  const { data, loaded, setData } = useLastFormValues();
   const [failedFormat, setFailedFormat] = useState<ExportFormat | null>(null);
   const brand = useBrandSettings();
+  const history = useHistory();
+  const historyTabRef = useRef<HTMLButtonElement>(null);
 
   const handleChange: CertificateFieldChange = (name, value) => {
     setData((current) => ({ ...current, [name]: value }));
+  };
+
+  const handleClearForm = () => {
+    const previous = data;
+    setData(clearCertificateText(data));
+    toast('Form cleared', {
+      action: { label: 'Undo', onClick: () => setData(previous) },
+    });
+  };
+
+  const handleOpen = (entry: CertificateData) => {
+    setData(entry);
+    toast.success(
+      `Opened the certificate for ${entry.recipientName || 'Unnamed recipient'}`,
+    );
   };
 
   const handleLogoChange = (logoDataUrl: string | null) => {
@@ -33,12 +57,18 @@ export function CertificateEditor() {
     });
   };
 
+  // Shared by the header buttons and every history row.
+  const exportCallbacks = {
+    onExportStart: () => setFailedFormat(null),
+    onExportError: setFailedFormat,
+    onExportSuccess: history.addToHistory,
+  };
+
   const exportHandlers = {
     data,
     colors: brand.settings.colors,
     logoDataUrl: brand.settings.logoDataUrl,
-    onExportStart: () => setFailedFormat(null),
-    onExportError: setFailedFormat,
+    ...exportCallbacks,
   };
 
   return (
@@ -52,8 +82,16 @@ export function CertificateEditor() {
             </p>
           </div>
           <div className='flex gap-2'>
-            <DownloadButton format='png' variant='outline' {...exportHandlers} />
-            <DownloadButton format='pdf' variant='default' {...exportHandlers} />
+            <DownloadButton
+              format='png'
+              variant='outline'
+              {...exportHandlers}
+            />
+            <DownloadButton
+              format='pdf'
+              variant='default'
+              {...exportHandlers}
+            />
           </div>
         </div>
         {failedFormat && (
@@ -70,10 +108,21 @@ export function CertificateEditor() {
               <TabsList className='w-full'>
                 <TabsTrigger value='details'>Details</TabsTrigger>
                 <TabsTrigger value='brand'>Brand</TabsTrigger>
+                <TabsTrigger ref={historyTabRef} value='history'>
+                  History
+                </TabsTrigger>
               </TabsList>
             </div>
             <TabsContent value='details'>
-              <CertificateForm data={data} onChange={handleChange} />
+              {loaded ? (
+                <CertificateForm
+                  data={data}
+                  onChange={handleChange}
+                  onClear={handleClearForm}
+                />
+              ) : (
+                <CertificateFormSkeleton />
+              )}
             </TabsContent>
             <TabsContent value='brand'>
               <BrandSettingsPanel
@@ -83,12 +132,25 @@ export function CertificateEditor() {
                 onBrandColorChange={handleBrandColorChange}
               />
             </TabsContent>
+            <TabsContent value='history'>
+              <HistoryPanel
+                entries={history.entries}
+                saveFailed={history.saveFailed}
+                colors={brand.settings.colors}
+                logoDataUrl={brand.settings.logoDataUrl}
+                clearedFocusRef={historyTabRef}
+                onOpen={handleOpen}
+                onClear={history.clearHistory}
+                {...exportCallbacks}
+              />
+            </TabsContent>
           </Tabs>
         </aside>
         <CertificatePreview
           data={data}
           colors={brand.settings.colors}
           logoDataUrl={brand.settings.logoDataUrl}
+          loading={!loaded}
         />
       </div>
     </>

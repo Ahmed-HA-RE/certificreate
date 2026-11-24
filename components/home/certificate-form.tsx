@@ -1,7 +1,9 @@
-import { useId } from 'react';
+import { useId, useRef } from 'react';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Skeleton } from '@/components/ui/skeleton';
 import { BORDER_OPTIONS, TEMPLATE_OPTIONS } from '@/lib/certificate';
 import type { BorderVariant, CertificateData } from '@/types/certificate';
 
@@ -36,12 +38,54 @@ export type CertificateFieldChange = <K extends keyof CertificateData>(
 interface CertificateFormProps {
   data: CertificateData;
   onChange: CertificateFieldChange;
+  /** Empties the four text fields; the template and border stay. */
+  onClear: () => void;
 }
 
-export function CertificateForm({ data, onChange }: CertificateFormProps) {
+/** The form's shape while saved values load, so the real values never flash in late. */
+export function CertificateFormSkeleton() {
+  return (
+    <div aria-busy='true' className='grid gap-6 p-6'>
+      <span className='sr-only'>Loading your saved details…</span>
+      {FIELDS.map(({ name, label }) => (
+        <div key={name} aria-hidden='true' className='grid gap-2'>
+          <span className='text-xs font-semibold text-muted-foreground'>{label}</span>
+          <Skeleton className='h-10 rounded-sm' />
+        </div>
+      ))}
+      <div aria-hidden='true' className='grid gap-2'>
+        <span className='text-xs font-semibold text-muted-foreground'>Template</span>
+        <div className='grid grid-cols-1 gap-2 sm:max-[1139px]:grid-cols-3'>
+          {TEMPLATE_OPTIONS.map(({ id }) => (
+            <Skeleton key={id} className='h-[42px] rounded-sm' />
+          ))}
+        </div>
+      </div>
+      <div aria-hidden='true' className='grid gap-2'>
+        <span className='text-xs font-semibold text-muted-foreground'>Border</span>
+        <div className='grid grid-cols-1 gap-2 sm:grid-cols-2'>
+          {BORDER_OPTIONS.map(({ value }) => (
+            <Skeleton key={value} className='h-[42px] rounded-sm' />
+          ))}
+        </div>
+      </div>
+      <Skeleton aria-hidden='true' className='h-10 rounded-lg' />
+    </div>
+  );
+}
+
+export function CertificateForm({ data, onChange, onClear }: CertificateFormProps) {
   const idPrefix = useId();
   const templateTitleId = `${idPrefix}-template`;
   const borderTitleId = `${idPrefix}-border`;
+  const firstFieldRef = useRef<HTMLInputElement>(null);
+  const isEmpty = FIELDS.every(({ name }) => data[name] === '');
+
+  // Clear form disables itself, so hand focus to the first field instead of dropping it.
+  const handleClear = () => {
+    onClear();
+    firstFieldRef.current?.focus();
+  };
 
   const handleTemplateChange = (value: string) => {
     const option = TEMPLATE_OPTIONS.find((template) => template.id === value);
@@ -55,7 +99,7 @@ export function CertificateForm({ data, onChange }: CertificateFormProps) {
 
   return (
     <div className='grid gap-6 p-6'>
-      {FIELDS.map(({ name, label, type }) => {
+      {FIELDS.map(({ name, label, type }, index) => {
         const id = `${idPrefix}-${name}`;
         return (
           <div key={name} className='grid gap-2'>
@@ -63,6 +107,7 @@ export function CertificateForm({ data, onChange }: CertificateFormProps) {
               {label}
             </Label>
             <Input
+              ref={index === 0 ? firstFieldRef : undefined}
               id={id}
               type={type}
               value={data[name]}
@@ -115,6 +160,10 @@ export function CertificateForm({ data, onChange }: CertificateFormProps) {
           ))}
         </RadioGroup>
       </div>
+
+      <Button variant='outline' disabled={isEmpty} onClick={handleClear} className='h-10'>
+        Clear form
+      </Button>
     </div>
   );
 }

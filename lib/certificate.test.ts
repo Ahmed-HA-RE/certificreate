@@ -1,10 +1,37 @@
 import { describe, expect, it } from 'vitest';
 import {
   certificateFileName,
+  clearCertificateText,
   DEFAULT_TEMPLATE_ID,
+  PLACEHOLDER_CERTIFICATE,
   resolveTemplateId,
   TEMPLATE_OPTIONS,
 } from '@/lib/certificate';
+import type { CertificateData } from '@/types/certificate';
+
+describe('clearCertificateText', () => {
+  it('empties the four text fields and keeps the template and border', () => {
+    const data: CertificateData = {
+      ...PLACEHOLDER_CERTIFICATE,
+      templateId: 'template-3',
+      border: 'gold',
+    };
+    expect(clearCertificateText(data)).toEqual({
+      recipientName: '',
+      courseTitle: '',
+      date: '',
+      instructorName: '',
+      templateId: 'template-3',
+      border: 'gold',
+    });
+  });
+
+  it('does not mutate the input', () => {
+    const data = { ...PLACEHOLDER_CERTIFICATE };
+    clearCertificateText(data);
+    expect(data).toEqual(PLACEHOLDER_CERTIFICATE);
+  });
+});
 
 describe('certificateFileName', () => {
   it('slugs the recipient name', () => {

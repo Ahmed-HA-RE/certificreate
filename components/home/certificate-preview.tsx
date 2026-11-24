@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { Certificate } from '@/components/home/certificate';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { BrandColors } from '@/types/brand-settings';
 import type { CertificateData } from '@/types/certificate';
 
@@ -12,12 +13,15 @@ interface CertificatePreviewProps {
   data: CertificateData;
   colors: BrandColors;
   logoDataUrl: string | null;
+  /** Saved values are still loading, so show a skeleton instead of the placeholder. */
+  loading: boolean;
 }
 
 export function CertificatePreview({
   data,
   colors,
   logoDataUrl,
+  loading,
 }: CertificatePreviewProps) {
   const frameRef = useRef<HTMLDivElement>(null);
 
@@ -38,6 +42,7 @@ export function CertificatePreview({
   return (
     <section
       aria-label='Certificate preview'
+      aria-busy={loading}
       className='flex min-w-0 flex-1 justify-center min-[1140px]:sticky min-[1140px]:top-8'
     >
       {/* Scale 0 until the first measurement, so the full-size sheet never flashes. */}
@@ -45,9 +50,13 @@ export function CertificatePreview({
         ref={frameRef}
         className='aspect-[1123/794] w-full overflow-hidden rounded-[4px] shadow-[0_20px_50px_rgb(0_0_0/0.45)] [--preview-scale:0]'
       >
-        <div className='w-[1123px] origin-top-left scale-(--preview-scale)'>
-          <Certificate data={data} colors={colors} logoDataUrl={logoDataUrl} />
-        </div>
+        {loading ? (
+          <Skeleton className='size-full rounded-none' />
+        ) : (
+          <div className='w-[1123px] origin-top-left scale-(--preview-scale)'>
+            <Certificate data={data} colors={colors} logoDataUrl={logoDataUrl} />
+          </div>
+        )}
       </div>
     </section>
   );

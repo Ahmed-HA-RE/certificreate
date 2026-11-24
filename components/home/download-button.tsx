@@ -2,6 +2,7 @@ import { useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { certificateFileName } from '@/lib/certificate';
+import { cn } from '@/lib/utils';
 import type { BrandColors } from '@/types/brand-settings';
 import type {
   CertificateData,
@@ -23,8 +24,14 @@ interface DownloadButtonProps {
   colors: BrandColors;
   logoDataUrl: string | null;
   variant: 'default' | 'outline';
+  /** Compact buttons (history rows) show a short `label` and need an `ariaLabel`. */
+  size?: 'default' | 'sm';
+  label?: string;
+  ariaLabel?: string;
   onExportStart: () => void;
   onExportError: (format: ExportFormat) => void;
+  /** Called with the exact data that was exported, once the file is handed to the browser. */
+  onExportSuccess: (data: CertificateData) => void;
 }
 
 export function DownloadButton({
@@ -33,8 +40,12 @@ export function DownloadButton({
   colors,
   logoDataUrl,
   variant,
+  size = 'default',
+  label,
+  ariaLabel,
   onExportStart,
   onExportError,
+  onExportSuccess,
 }: DownloadButtonProps) {
   const [isPending, setIsPending] = useTransition();
 
@@ -54,26 +65,24 @@ export function DownloadButton({
         saveFile(await response.blob(), certificateFileName(data, format));
       } catch {
         onExportError(format);
+        return;
       }
+      onExportSuccess(data);
     });
   };
 
   return (
     <Button
       variant={variant}
+      size={size}
       disabled={isPending}
       aria-busy={isPending}
+      aria-label={ariaLabel}
       onClick={handleClick}
-      className='h-10 px-4'
+      className={cn(size === 'default' && 'h-10 px-4')}
     >
-      {isPending ? (
-        <>
-          <Spinner data-icon='inline-start' aria-hidden='true' />
-          Exporting…
-        </>
-      ) : (
-        LABELS[format]
-      )}
+      {isPending && <Spinner data-icon='inline-start' aria-hidden='true' />}
+      {isPending && !label ? 'Exporting…' : (label ?? LABELS[format])}
     </Button>
   );
 }
