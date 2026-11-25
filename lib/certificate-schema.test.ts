@@ -3,6 +3,10 @@ import { PLACEHOLDER_CERTIFICATE, TEMPLATE_OPTIONS } from '@/lib/certificate';
 import {
   certificateDataSchema,
   exportRequestSchema,
+  MAX_COURSE_TITLE_LENGTH,
+  MAX_INSTRUCTOR_NAME_LENGTH,
+  MAX_RECIPIENT_NAME_LENGTH,
+  validateCertificateForm,
 } from '@/lib/certificate-schema';
 
 describe('certificateDataSchema', () => {
@@ -18,9 +22,11 @@ describe('certificateDataSchema', () => {
     expect(certificateDataSchema.safeParse(certificate).success).toBe(false);
   });
 
-  it('rejects unknown keys', () => {
+  it('strips unknown keys', () => {
     const certificate = { ...PLACEHOLDER_CERTIFICATE, extra: 'value' };
-    expect(certificateDataSchema.safeParse(certificate).success).toBe(false);
+    expect(certificateDataSchema.parse(certificate)).toEqual(
+      PLACEHOLDER_CERTIFICATE,
+    );
   });
 });
 
@@ -38,9 +44,11 @@ describe('exportRequestSchema', () => {
     expect(exportRequestSchema.safeParse(branded).success).toBe(false);
   });
 
-  it('still rejects unknown keys', () => {
+  it('strips unknown keys', () => {
     const certificate = { ...PLACEHOLDER_CERTIFICATE, extra: 'value' };
-    expect(exportRequestSchema.safeParse(certificate).success).toBe(false);
+    expect(exportRequestSchema.parse(certificate)).toEqual(
+      PLACEHOLDER_CERTIFICATE,
+    );
   });
 });
 
@@ -58,5 +66,103 @@ describe('exportRequestSchema logo', () => {
       logoDataUrl: 'data:image/svg+xml;base64,PHN2Zy8+',
     };
     expect(exportRequestSchema.safeParse(request).success).toBe(false);
+  });
+});
+
+describe('validateCertificateForm', () => {
+  it('accepts a complete certificate', () => {
+    expect(validateCertificateForm(PLACEHOLDER_CERTIFICATE)).toEqual({});
+  });
+
+  it('requires every detail field', () => {
+    expect(
+      validateCertificateForm({
+        ...PLACEHOLDER_CERTIFICATE,
+        recipientName: '',
+        courseTitle: '',
+        date: '',
+        instructorName: '',
+      })
+    ).toEqual({
+      recipientName: "Enter the recipient's name.",
+      courseTitle: 'Enter the course or achievement.',
+      date: 'Choose or type a date.',
+      instructorName: "Enter the instructor's name.",
+    });
+  });
+
+  it('treats whitespace alone as empty', () => {
+    expect(
+      validateCertificateForm({ ...PLACEHOLDER_CERTIFICATE, courseTitle: '   ' })
+    ).toEqual({ courseTitle: 'Enter the course or achievement.' });
+  });
+
+  it('accepts text exactly at each limit', () => {
+    expect(
+      validateCertificateForm({
+        ...PLACEHOLDER_CERTIFICATE,
+        recipientName: 'a'.repeat(MAX_RECIPIENT_NAME_LENGTH),
+        courseTitle: 'a'.repeat(MAX_COURSE_TITLE_LENGTH),
+        instructorName: 'a'.repeat(MAX_INSTRUCTOR_NAME_LENGTH),
+      })
+    ).toEqual({});
+  });
+
+  it('rejects text one character over each limit', () => {
+    expect(
+      validateCertificateForm({
+        ...PLACEHOLDER_CERTIFICATE,
+        recipientName: 'a'.repeat(MAX_RECIPIENT_NAME_LENGTH + 1),
+        courseTitle: 'a'.repeat(MAX_COURSE_TITLE_LENGTH + 1),
+        instructorName: 'a'.repeat(MAX_INSTRUCTOR_NAME_LENGTH + 1),
+      })
+    ).toEqual({
+      recipientName: 'Recipient name must be 20 characters or fewer.',
+      courseTitle: 'Course must be 40 characters or fewer.',
+      instructorName: 'Instructor name must be 20 characters or fewer.',
+    });
+  });
+
+  it('measures the limit without surrounding spaces', () => {
+    const name = ` ${'a'.repeat(MAX_RECIPIENT_NAME_LENGTH)} `;
+    expect(
+      validateCertificateForm({ ...PLACEHOLDER_CERTIFICATE, recipientName: name })
+    ).toEqual({});
+  });
+
+  it('reports only the fields that are wrong', () => {
+    expect(
+      validateCertificateForm({
+        ...PLACEHOLDER_CERTIFICATE,
+        date: '',
+        instructorName: 'a'.repeat(MAX_INSTRUCTOR_NAME_LENGTH + 1),
+      })
+    ).toEqual({
+      date: 'Choose or type a date.',
+      instructorName: 'Instructor name must be 20 characters or fewer.',
+    });
+  });
+});
+
+describe('certificateDataSchema limits', () => {
+  it('accepts text exactly at each limit', () => {
+    const certificate = {
+      ...PLACEHOLDER_CERTIFICATE,
+      recipientName: 'a'.repeat(MAX_RECIPIENT_NAME_LENGTH),
+      courseTitle: 'a'.repeat(MAX_COURSE_TITLE_LENGTH),
+      instructorName: 'a'.repeat(MAX_INSTRUCTOR_NAME_LENGTH),
+    };
+    expect(certificateDataSchema.safeParse(certificate).success).toBe(true);
+  });
+
+  it('rejects each field one character over its limit', () => {
+    for (const [field, max] of [
+      ['recipientName', MAX_RECIPIENT_NAME_LENGTH],
+      ['courseTitle', MAX_COURSE_TITLE_LENGTH],
+      ['instructorName', MAX_INSTRUCTOR_NAME_LENGTH],
+    ] as const) {
+      const certificate = { ...PLACEHOLDER_CERTIFICATE, [field]: 'a'.repeat(max + 1) };
+      expect(certificateDataSchema.safeParse(certificate).success).toBe(false);
+    }
   });
 });

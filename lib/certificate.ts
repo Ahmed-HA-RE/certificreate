@@ -2,6 +2,7 @@ import type {
   BorderOption,
   BorderVariant,
   CertificateData,
+  CertificateFormValues,
   ExportFormat,
   TemplateId,
   TemplateOption,
@@ -39,6 +40,16 @@ export const PLACEHOLDER_CERTIFICATE: CertificateData = {
   border: DEFAULT_BORDER,
 };
 
+/** The four details of `data`, as the form holds them. */
+export function toFormValues(data: CertificateData): CertificateFormValues {
+  return {
+    recipientName: data.recipientName,
+    courseTitle: data.courseTitle,
+    date: data.date,
+    instructorName: data.instructorName,
+  };
+}
+
 /** `data` with its four text fields emptied; the template and border are kept. */
 export function clearCertificateText(data: CertificateData): CertificateData {
   return {
@@ -63,12 +74,30 @@ export function formatCertificateDate(date: string): string {
   const match = ISO_DATE.exec(date);
   if (!match) return date;
   const [year, month, day] = match.slice(1).map(Number);
+  return isRealDay(year, month, day)
+    ? CERTIFICATE_DATE_FORMAT.format(new Date(Date.UTC(year, month - 1, day)))
+    : date;
+}
+
+function isRealDay(year: number, month: number, day: number) {
   const utc = new Date(Date.UTC(year, month - 1, day));
-  const isRealDay =
+  return (
     utc.getUTCFullYear() === year &&
     utc.getUTCMonth() === month - 1 &&
-    utc.getUTCDate() === day;
-  return isRealDay ? CERTIFICATE_DATE_FORMAT.format(utc) : date;
+    utc.getUTCDate() === day
+  );
+}
+
+const TYPED_DATE = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+
+/** Typed `M/D/YYYY` or `MM/DD/YYYY` as ISO `YYYY-MM-DD`, or `null` unless it is a real day. */
+export function parseTypedDate(text: string): string | null {
+  const match = TYPED_DATE.exec(text.trim());
+  if (!match) return null;
+  const [month, day, year] = match.slice(1).map(Number);
+  if (!isRealDay(year, month, day)) return null;
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${year}-${pad(month)}-${pad(day)}`;
 }
 
 /** `certificate-<recipient-slug>.<format>`, ASCII only, e.g. `certificate-john-smith.png`. */

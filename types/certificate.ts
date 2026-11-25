@@ -32,3 +32,16 @@ export interface ExportRequest extends CertificateData {
 }
 
 export type ExportFormat = 'png' | 'pdf';
+
+/** The four detail fields the form validates. */
+export type CertificateFormField =
+  | 'recipientName'
+  | 'courseTitle'
+  | 'date'
+  | 'instructorName';
+
+/** What React Hook Form manages: the four details, without template and border. */
+export type CertificateFormValues = Pick<CertificateData, CertificateFormField>;
+
+/** The first error message for each invalid detail field; `{}` when the form is valid. */
+export type CertificateFormErrors = Partial<Record<CertificateFormField, string>>;

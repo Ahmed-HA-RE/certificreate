@@ -1,4 +1,6 @@
-import { useId, useMemo, useRef } from 'react';
+import type React from 'react';
+import { useId, useMemo, useState } from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
 import { parseDate } from '@ark-ui/react/date-picker';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,13 +22,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Skeleton } from '@/components/ui/skeleton';
-import { BORDER_OPTIONS, TEMPLATE_OPTIONS } from '@/lib/certificate';
-import type { BorderVariant, CertificateData } from '@/types/certificate';
+import {
+  BORDER_OPTIONS,
+  parseTypedDate,
+  TEMPLATE_OPTIONS,
+} from '@/lib/certificate';
+import type {
+  BorderVariant,
+  CertificateData,
+  CertificateFormField,
+  CertificateFormValues,
+} from '@/types/certificate';
 
-type DetailField = Exclude<keyof CertificateData, 'templateId' | 'border'>;
+const TYPED_DATE_ERROR = 'Enter the date as MM/DD/YYYY.';
 
 interface FieldConfig {
-  name: DetailField;
+  name: CertificateFormField;
   label: string;
   type: 'text' | 'date';
 }
@@ -51,6 +62,10 @@ export type CertificateFieldChange = <K extends keyof CertificateData>(
   value: CertificateData[K]
 ) => void;
 
+/**
+ * The four details come from the surrounding React Hook Form (`FormProvider`);
+ * `data` supplies the template and border, which `onChange` updates.
+ */
 interface CertificateFormProps {
   data: CertificateData;
   onChange: CertificateFieldChange;
@@ -90,17 +105,29 @@ export function CertificateFormSkeleton() {
   );
 }
 
-export function CertificateForm({ data, onChange, onClear }: CertificateFormProps) {
+export function CertificateForm({
+  data,
+  onChange,
+  onClear,
+}: CertificateFormProps) {
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = useFormContext<CertificateFormValues>();
   const idPrefix = useId();
+  // Set when typed text can't be read as a date; the date is cleared and this says why.
+  const [typedDateError, setTypedDateError] = useState<string | null>(null);
   const templateTitleId = `${idPrefix}-template`;
   const borderTitleId = `${idPrefix}-border`;
-  const firstFieldRef = useRef<HTMLInputElement>(null);
   const isEmpty = FIELDS.every(({ name }) => data[name] === '');
 
   // Clear form disables itself, so hand focus to the first field instead of dropping it.
   const handleClear = () => {
     onClear();
-    firstFieldRef.current?.focus();
+    setTypedDateError(null);
+    // `reset` drops React Hook Form's field refs until the next render, so focus by id.
+    document.getElementById(`${idPrefix}-recipientName`)?.focus();
   };
 
   const handleTemplateChange = (value: string) => {
@@ -115,28 +142,60 @@ export function CertificateForm({ data, onChange, onClear }: CertificateFormProp
 
   return (
     <div className='grid gap-6 p-6'>
-      {FIELDS.map(({ name, label, type }, index) => {
+      {FIELDS.map(({ name, label, type }) => {
         const id = `${idPrefix}-${name}`;
+        const errorId = `${id}-error`;
+        const error =
+          name === 'date'
+            ? (typedDateError ?? errors.date?.message)
+            : errors[name]?.message;
+        const errorProps = error
+          ? { 'aria-invalid': true, 'aria-describedby': errorId }
+          : {};
         return (
           <div key={name} className='grid gap-2'>
             <Label htmlFor={id} className='text-xs font-semibold text-muted-foreground'>
               {label}
             </Label>
             {type === 'date' ? (
-              <CertificateDatePicker
-                id={id}
-                value={data.date}
-                onChange={(value) => onChange('date', value)}
+              <Controller
+                control={control}
+                name='date'
+                render={({ field }) => (
+                  <CertificateDatePicker
+                    id={id}
+                    value={field.value}
+                    inputRef={field.ref}
+                    onChange={(value) => {
+                      setTypedDateError(null);
+                      field.onChange(value);
+                    }}
+                    onCommitText={(text) => {
+                      // Ark would swap unreadable text for today's date; this form
+                      // commits typed text itself, so nothing is chosen silently.
+                      const iso = parseTypedDate(text);
+                      const unreadable = text.trim() !== '' && !iso;
+                      field.onChange(iso ?? '');
+                      setTypedDateError(unreadable ? TYPED_DATE_ERROR : null);
+                    }}
+                    onBlur={field.onBlur}
+                    inputProps={errorProps}
+                  />
+                )}
               />
             ) : (
               <Input
-                ref={index === 0 ? firstFieldRef : undefined}
                 id={id}
                 type={type}
-                value={data[name]}
-                onChange={(event) => onChange(name, event.target.value)}
                 className='h-10 rounded-sm px-3'
+                {...register(name)}
+                {...errorProps}
               />
+            )}
+            {error && (
+              <p id={errorId} className='text-sm text-destructive'>
+                {error}
+              </p>
             )}
           </div>
         );
@@ -197,23 +256,60 @@ interface CertificateDatePickerProps {
   /** ISO `YYYY-MM-DD`, or `''` for no date. */
   value: string;
   onChange: (value: string) => void;
+  /** React Hook Form's field ref, so it can focus the text input. */
+  inputRef: React.Ref<HTMLInputElement>;
+  /** Typed text to commit, on blur or Enter; Ark's own fix-on-blur is off. */
+  onCommitText: (text: string) => void;
+  onBlur: () => void;
+  /** `aria-invalid` and `aria-describedby` for the text input while an error shows. */
+  inputProps: React.AriaAttributes;
+}
+
+/** Typed text as a picker date, read by the same rule as the form's error message. */
+function parseTypedDateValue(text: string) {
+  const iso = parseTypedDate(text);
+  return iso ? parseDate(iso) : undefined;
 }
 
 /** Pick from a calendar or type MM/DD/YYYY; any date, past or future, is allowed. */
-function CertificateDatePicker({ id, value, onChange }: CertificateDatePickerProps) {
+function CertificateDatePicker({
+  id,
+  value,
+  onChange,
+  inputRef,
+  onCommitText,
+  onBlur,
+  inputProps,
+}: CertificateDatePickerProps) {
   const selected = useMemo(() => (value ? [parseDate(value)] : []), [value]);
 
   return (
     <DatePicker
       ids={{ input: () => id }}
       locale='en-US'
+      parse={parseTypedDateValue}
       value={selected}
       // `valueAsString` is locale text (`11/12/2026`); a CalendarDate's `toString()` is ISO.
       onValueChange={(details) => onChange(details.value[0]?.toString() ?? '')}
       positioning={{ placement: 'bottom-start' }}
       className='w-full bg-transparent p-0'
     >
-      <DatePickerInput className='h-10 rounded-sm [&>input]:ps-3' />
+      <DatePickerInput
+        ref={inputRef}
+        className='h-10 rounded-sm [&>input]:ps-3'
+        fixOnBlur={false}
+        onBlur={(event) => {
+          onCommitText(event.currentTarget.value);
+          onBlur();
+        }}
+        // Ark's Enter selects its focused day even for unreadable text; commit first.
+        onKeyDownCapture={(event) => {
+          if (event.key !== 'Enter') return;
+          event.preventDefault();
+          onCommitText(event.currentTarget.value);
+        }}
+        {...inputProps}
+      />
       <DatePickerContent>
         <DatePickerView view='day'>
           <DatePickerViewControl>

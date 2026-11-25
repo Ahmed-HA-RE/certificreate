@@ -28,6 +28,9 @@ interface DownloadButtonProps {
   size?: 'default' | 'sm';
   label?: string;
   ariaLabel?: string;
+  /** Id of text that explains the button, e.g. why it is disabled. */
+  ariaDescribedBy?: string;
+  disabled?: boolean;
   onExportStart: () => void;
   onExportError: (format: ExportFormat) => void;
   /** Called with the exact data that was exported, once the file is handed to the browser. */
@@ -43,6 +46,8 @@ export function DownloadButton({
   size = 'default',
   label,
   ariaLabel,
+  ariaDescribedBy,
+  disabled = false,
   onExportStart,
   onExportError,
   onExportSuccess,
@@ -75,9 +80,10 @@ export function DownloadButton({
     <Button
       variant={variant}
       size={size}
-      disabled={isPending}
+      disabled={isPending || disabled}
       aria-busy={isPending}
       aria-label={ariaLabel}
+      aria-describedby={ariaDescribedBy}
       onClick={handleClick}
       className={cn(size === 'default' && 'h-10 px-4')}
     >

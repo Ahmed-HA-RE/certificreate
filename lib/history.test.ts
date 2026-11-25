@@ -55,11 +55,15 @@ describe('parseHistory', () => {
       { ...JOHN_ENTRY, id: '' },
       { ...JOHN_ENTRY, createdAt: 'yesterday' },
       { ...JOHN_ENTRY, templateId: 'template-99' },
-      { ...JOHN_ENTRY, extra: true },
       'not an entry',
       JOHN_ENTRY,
     ]);
     expect(parseHistory(raw)).toEqual([SARA_ENTRY, JOHN_ENTRY]);
+  });
+
+  it('strips unknown keys from a stored entry', () => {
+    const raw = JSON.stringify([{ ...JOHN_ENTRY, extra: true }]);
+    expect(parseHistory(raw)).toEqual([JOHN_ENTRY]);
   });
 
   it('round-trips through serializeHistory', () => {
@@ -124,11 +128,16 @@ describe('parseLastFormValues', () => {
       'not json',
       '[]',
       JSON.stringify({ ...JOHN, border: 'red' }),
-      JSON.stringify({ ...JOHN, extra: true }),
-      JSON.stringify({ ...JOHN, recipientName: 'x'.repeat(201) }),
+      JSON.stringify({ ...JOHN, recipientName: 'x'.repeat(21) }),
     ]) {
       expect(parseLastFormValues(raw)).toBe(PLACEHOLDER_CERTIFICATE);
     }
+  });
+
+  it('strips unknown keys from stored values', () => {
+    expect(parseLastFormValues(JSON.stringify({ ...JOHN, extra: true }))).toEqual(
+      JOHN,
+    );
   });
 
   it('keeps valid stored values, including empty fields', () => {

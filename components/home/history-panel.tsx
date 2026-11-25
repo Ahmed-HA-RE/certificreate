@@ -1,4 +1,4 @@
-import { useRef, useState, type RefObject } from 'react';
+import { useId, useRef, useState, type RefObject } from 'react';
 import { DownloadButton } from '@/components/home/download-button';
 import {
   AlertDialog,
@@ -12,6 +12,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import { validateCertificateForm } from '@/lib/certificate-schema';
 import { toCertificateData } from '@/lib/history';
 import type { BrandColors } from '@/types/brand-settings';
 import type { CertificateData, ExportFormat } from '@/types/certificate';
@@ -54,6 +55,7 @@ export function HistoryPanel({
   onExportError,
   onExportSuccess,
 }: HistoryPanelProps) {
+  const idPrefix = useId();
   const [confirmOpen, setConfirmOpen] = useState(false);
   // Frozen on open, so the text never reads "0 certificates" while the dialog closes.
   const [confirmCount, setConfirmCount] = useState(0);
@@ -94,6 +96,9 @@ export function HistoryPanel({
           {entries.map((entry) => {
             const data = toCertificateData(entry);
             const name = entry.recipientName || UNNAMED_RECIPIENT;
+            // Saved before the form rules existed, or with details missing: open it to fix.
+            const incomplete = Object.keys(validateCertificateForm(data)).length > 0;
+            const noteId = `${idPrefix}-${entry.id}-incomplete`;
             return (
               <li key={entry.id} className='grid gap-2 py-3 first:pt-0 last:pb-0'>
                 <div className='grid min-w-0 gap-0.5'>
@@ -133,12 +138,19 @@ export function HistoryPanel({
                       size='sm'
                       label={format.toUpperCase()}
                       ariaLabel={`Download ${format.toUpperCase()} for ${name}`}
+                      disabled={incomplete}
+                      ariaDescribedBy={incomplete ? noteId : undefined}
                       onExportStart={onExportStart}
                       onExportError={onExportError}
                       onExportSuccess={onExportSuccess}
                     />
                   ))}
                 </div>
+                {incomplete && (
+                  <p id={noteId} className='text-xs text-muted-foreground'>
+                    Missing details. Open it to finish.
+                  </p>
+                )}
               </li>
             );
           })}
