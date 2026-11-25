@@ -50,6 +50,27 @@ export function clearCertificateText(data: CertificateData): CertificateData {
   };
 }
 
+const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+// Fixed locale and UTC, so the browser preview and the server export print the same day.
+const CERTIFICATE_DATE_FORMAT = new Intl.DateTimeFormat('en-US', {
+  dateStyle: 'long',
+  timeZone: 'UTC',
+});
+
+/** ISO `YYYY-MM-DD` as printed on the certificate, e.g. `October 12, 2026`; anything else unchanged. */
+export function formatCertificateDate(date: string): string {
+  const match = ISO_DATE.exec(date);
+  if (!match) return date;
+  const [year, month, day] = match.slice(1).map(Number);
+  const utc = new Date(Date.UTC(year, month - 1, day));
+  const isRealDay =
+    utc.getUTCFullYear() === year &&
+    utc.getUTCMonth() === month - 1 &&
+    utc.getUTCDate() === day;
+  return isRealDay ? CERTIFICATE_DATE_FORMAT.format(utc) : date;
+}
+
 /** `certificate-<recipient-slug>.<format>`, ASCII only, e.g. `certificate-john-smith.png`. */
 export function certificateFileName(
   data: Pick<CertificateData, 'recipientName'>,

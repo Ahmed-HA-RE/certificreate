@@ -1,5 +1,21 @@
-import { useId, useRef } from 'react';
+import { useId, useMemo, useRef } from 'react';
+import { parseDate } from '@ark-ui/react/date-picker';
 import { Button } from '@/components/ui/button';
+import {
+  DatePicker,
+  DatePickerContent,
+  DatePickerInput,
+  DatePickerNextTrigger,
+  DatePickerPrevTrigger,
+  DatePickerTable,
+  DatePickerTableDays,
+  DatePickerTableMonths,
+  DatePickerTableYears,
+  DatePickerView,
+  DatePickerViewControl,
+  DatePickerViewTrigger,
+  DatePickerWeekDays,
+} from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -106,14 +122,22 @@ export function CertificateForm({ data, onChange, onClear }: CertificateFormProp
             <Label htmlFor={id} className='text-xs font-semibold text-muted-foreground'>
               {label}
             </Label>
-            <Input
-              ref={index === 0 ? firstFieldRef : undefined}
-              id={id}
-              type={type}
-              value={data[name]}
-              onChange={(event) => onChange(name, event.target.value)}
-              className='h-10 rounded-sm px-3'
-            />
+            {type === 'date' ? (
+              <CertificateDatePicker
+                id={id}
+                value={data.date}
+                onChange={(value) => onChange('date', value)}
+              />
+            ) : (
+              <Input
+                ref={index === 0 ? firstFieldRef : undefined}
+                id={id}
+                type={type}
+                value={data[name]}
+                onChange={(event) => onChange(name, event.target.value)}
+                className='h-10 rounded-sm px-3'
+              />
+            )}
           </div>
         );
       })}
@@ -165,5 +189,64 @@ export function CertificateForm({ data, onChange, onClear }: CertificateFormProp
         Clear form
       </Button>
     </div>
+  );
+}
+
+interface CertificateDatePickerProps {
+  id: string;
+  /** ISO `YYYY-MM-DD`, or `''` for no date. */
+  value: string;
+  onChange: (value: string) => void;
+}
+
+/** Pick from a calendar or type MM/DD/YYYY; any date, past or future, is allowed. */
+function CertificateDatePicker({ id, value, onChange }: CertificateDatePickerProps) {
+  const selected = useMemo(() => (value ? [parseDate(value)] : []), [value]);
+
+  return (
+    <DatePicker
+      ids={{ input: () => id }}
+      locale='en-US'
+      value={selected}
+      // `valueAsString` is locale text (`11/12/2026`); a CalendarDate's `toString()` is ISO.
+      onValueChange={(details) => onChange(details.value[0]?.toString() ?? '')}
+      positioning={{ placement: 'bottom-start' }}
+      className='w-full bg-transparent p-0'
+    >
+      <DatePickerInput className='h-10 rounded-sm [&>input]:ps-3' />
+      <DatePickerContent>
+        <DatePickerView view='day'>
+          <DatePickerViewControl>
+            <DatePickerPrevTrigger />
+            <DatePickerViewTrigger />
+            <DatePickerNextTrigger />
+          </DatePickerViewControl>
+          <DatePickerTable>
+            <DatePickerWeekDays />
+            <DatePickerTableDays />
+          </DatePickerTable>
+        </DatePickerView>
+        <DatePickerView view='month'>
+          <DatePickerViewControl>
+            <DatePickerPrevTrigger />
+            <DatePickerViewTrigger />
+            <DatePickerNextTrigger />
+          </DatePickerViewControl>
+          <DatePickerTable>
+            <DatePickerTableMonths />
+          </DatePickerTable>
+        </DatePickerView>
+        <DatePickerView view='year'>
+          <DatePickerViewControl>
+            <DatePickerPrevTrigger />
+            <DatePickerViewTrigger />
+            <DatePickerNextTrigger />
+          </DatePickerViewControl>
+          <DatePickerTable>
+            <DatePickerTableYears />
+          </DatePickerTable>
+        </DatePickerView>
+      </DatePickerContent>
+    </DatePicker>
   );
 }

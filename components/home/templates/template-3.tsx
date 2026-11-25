@@ -1,6 +1,7 @@
 import { CornerOrnament } from '@/components/home/corner-ornament';
 import { LogoMark } from '@/components/home/logo-mark';
 import type { TemplateLayoutProps } from '@/components/home/certificate';
+import { formatCertificateDate } from '@/lib/certificate';
 
 export function Template3({ data, logoDataUrl }: TemplateLayoutProps) {
   return (
@@ -27,7 +28,7 @@ export function Template3({ data, logoDataUrl }: TemplateLayoutProps) {
 
       <div className='cert-footer'>
         <div className='cert-sig'>
-          <div className='cert-sig-value'>{data.date}</div>
+          <div className='cert-sig-value'>{formatCertificateDate(data.date)}</div>
           <div className='cert-line sig' />
           <div className='cert-sig-label'>Date</div>
         </div>
